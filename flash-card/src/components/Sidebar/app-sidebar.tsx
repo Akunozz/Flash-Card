@@ -2,7 +2,9 @@
 
 import * as React from "react"
 import {
+  File,
   Frame,
+  House,
   Map,
   PieChart,
   Settings2,
@@ -10,6 +12,7 @@ import {
 } from "lucide-react"
 
 import { NavMain } from "@/components/Sidebar/nav-main"
+import { NavMainSimple } from "@/components/Sidebar/nav-simple"
 import { NavUser } from "@/components/Sidebar/nav-user"
 import {
   Sidebar,
@@ -25,7 +28,29 @@ const data = {
     email: "breno@email.com",
     avatar: "/avatars/shadcn.jpg",
   },
+
+  navSimple: [
+    {
+      title: "Home",
+      url: "/telaInicial",
+      icon: House,
+      isActive: false,
+    },
+  ],
+
   navMain: [
+    {
+      title: "Baralhos",
+      url: "/",
+      icon: File,
+      isActive: false,
+      items: [
+        {
+          title: "Criar Baralho",
+          url: "/baralho/criar",
+        },
+      ],
+    },
     {
       title: "Cards",
       url: "#",
@@ -34,11 +59,11 @@ const data = {
       items: [
         {
           title: "Criar card",
-          url: "#",
+          url: "/cartas/criar",
         },
         {
-          title: "Estudar cards",
-          url: "#",
+          title: "Visualizar cards",
+          url: "/cartas",
         },
         {
           title: "Fazer prova",
@@ -66,23 +91,6 @@ const data = {
       ],
     },
   ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -92,6 +100,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         Flash Card
       </SidebarHeader>
       <SidebarContent>
+        <NavMainSimple items={data.navSimple} />
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>

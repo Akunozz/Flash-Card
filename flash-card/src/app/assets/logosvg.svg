@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240">
+  <!-- Carta de fundo (cinza) -->
+  <rect x="60" y="30" width="80" height="80" rx="12" fill="#e0e0e0" stroke="#333333" stroke-width="4"></rect>
+  <!-- Carta da frente (azul) -->
+  <rect x="80" y="40" width="80" height="80" rx="12" fill="#4A90E2" stroke="#333333" stroke-width="4"></rect>
+  <!-- Texto "FlashCard" -->
+  <text x="120" y="150" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" fill="#333333">
+    FlashCard
+  </text>
+  <!-- Texto "App" -->
+  <text x="120" y="180" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#333333">
+    App
+  </text>
+</svg>

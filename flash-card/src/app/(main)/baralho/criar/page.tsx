@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -9,43 +8,40 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
+import { createBaralho } from "@/services/reqBaralho"
 
 export default function CriarBaralho() {
   const [title, setTitle] = useState("")
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!title.trim()) {
-      alert({
-        title: "Erro",
-        description: "O título do baralho não pode estar vazio.",
-        variant: "destructive",
-      })
+      alert("O título do baralho não pode estar vazio.")
       return
     }
 
-    // Gerar ID único
-    const id = Date.now().toString()
+    setLoading(true)
 
-    // Buscar baralhos existentes
-    const existingDecks = JSON.parse(localStorage.getItem("flashcards-decks") || "[]")
+    try {
+      const now = new Date().toISOString()
 
-    // Adicionar novo baralho
-    const newDeck = { id, title, cardCount: 0 }
-    const updatedDecks = [...existingDecks, newDeck]
+      await createBaralho({
+        name: title,
+        startedAt: now,
+        finishedAt: now,
+        cartas: []
+      })
 
-    // Salvar no localStorage
-    localStorage.setItem("flashcards-decks", JSON.stringify(updatedDecks))
-
-    alert({
-      title: "Baralho criado",
-      description: "Seu novo baralho foi criado com sucesso.",
-    })
-
-    // Redirecionar para a página principal
-    router.push("/")
+      router.push("/telaInicial")
+    } catch (err: any) {
+      console.error("Erro ao criar baralho:", err)
+      alert("Erro ao criar baralho. Tente novamente.")
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -72,7 +68,9 @@ export default function CriarBaralho() {
             <Link href="/">
               <Button variant="outline">Cancelar</Button>
             </Link>
-            <Button type="submit">Criar Baralho</Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Criando..." : "Criar Baralho"}
+            </Button>
           </CardFooter>
         </form>
       </Card>
