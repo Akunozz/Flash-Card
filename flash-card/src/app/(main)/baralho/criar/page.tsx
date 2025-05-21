@@ -1,44 +1,50 @@
 "use client"
 
-import type React from "react"
-import { useState } from "react"
+import React, { useState } from "react"
 import { useRouter } from "next/navigation"
+import axios from "axios"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import Link from "next/link"
-import { createBaralho } from "@/services/reqBaralho"
 
 export default function CriarBaralho() {
-  const [title, setTitle] = useState("")
+  const [nome, setNome] = useState("")
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!title.trim()) {
-      alert("O título do baralho não pode estar vazio.")
+    if (!nome.trim()) {
+      alert("O nome do baralho não pode estar vazio.")
       return
     }
 
     setLoading(true)
 
     try {
-      const now = new Date().toISOString()
+      // Ajuste o 'criador' conforme seu usuário logado
+      const payload = {
+        nome,
+        numero_de_cards: 0,
+        ordem_dos_cards: { ordem: [] as number[] },
+        criador: 2,
+      }
 
-      await createBaralho({
-        name: title,
-        startedAt: now,
-        finishedAt: now,
-        cartas: []
-      })
+      // Faz o POST via proxy Next.js
+      await axios.post("/api/criar_deck/", payload)
 
-      router.push("/telaInicial")
-    } catch (err: any) {
+      router.push("/") // ou "/telaInicial", conforme sua rota
+    } catch (err) {
       console.error("Erro ao criar baralho:", err)
-      alert("Erro ao criar baralho. Tente novamente.")
+      alert("Erro ao criar o baralho. Tente novamente.")
     } finally {
       setLoading(false)
     }
@@ -51,23 +57,27 @@ export default function CriarBaralho() {
           <CardTitle>Criar Novo Baralho</CardTitle>
         </CardHeader>
         <form onSubmit={handleSubmit}>
-          <CardContent>
-            <div className="grid w-full items-center gap-4">
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="title">Nome do Baralho</Label>
-                <Input
-                  id="title"
-                  placeholder="Ex: Matemática, Inglês, História..."
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
-              </div>
+          <CardContent className="space-y-4">
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="nome">Nome do Baralho</Label>
+              <Input
+                id="nome"
+                placeholder="Ex: Matemática, Inglês, História..."
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                disabled={loading}
+              />
             </div>
           </CardContent>
           <CardFooter className="flex justify-between">
-            <Link href="/">
-              <Button variant="outline">Cancelar</Button>
-            </Link>
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => router.back()}
+              disabled={loading}
+            >
+              Cancelar
+            </Button>
             <Button type="submit" disabled={loading}>
               {loading ? "Criando..." : "Criar Baralho"}
             </Button>
