@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,16 +8,47 @@ import { Label } from "@/components/ui/label";
 import logo from "@/app/assets/logo.png";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("/api/login/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        router.push("/telaInicial");
+      } else {
+        setError(data.message || "Erro ao fazer login");
+      }
+    } catch (err) {
+      setError("Erro de conexão com o servidor");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8">
+          <form className="p-6 md:p-8" onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center text-center">
                 <h1 className="text-2xl font-bold">Welcome back</h1>
@@ -23,13 +56,18 @@ export function LoginForm({
                   Login to your Acme Inc account
                 </p>
               </div>
+              {error && (
+                <div className="text-red-500 text-sm text-center">{error}</div>
+              )}
               <div className="grid gap-3">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="username">Usuário</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
+                  id="username"
+                  type="text"
+                  placeholder="Seu usuário"
                   required
+                  value={username}
+                  onChange={e => setUsername(e.target.value)}
                 />
               </div>
               <div className="grid gap-3">
@@ -42,13 +80,17 @@ export function LoginForm({
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" type="password" required />
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                />
               </div>
-              <Link href="/telaInicial">
-                <Button type="submit" className="w-full">
-                  Login
-                </Button>
-              </Link>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Entrando..." : "Login"}
+              </Button>
               <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                 <span className="bg-card text-muted-foreground relative z-10 px-2">
                   Or continue with
@@ -91,7 +133,7 @@ export function LoginForm({
               </div>
             </div>
           </form>
-          <div className="bg-muted relative hidden md:block">
+          <div className="bg-muted relative hidden md:block ">
             <Image src={logo} alt="logo" />
           </div>
         </CardContent>
