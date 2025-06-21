@@ -7,18 +7,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import logo from "@/app/assets/logo.png";
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
+import { toast } from "sonner";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const [username, setUsername] = useState("");
+  const [nome, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
@@ -26,13 +28,14 @@ export function LoginForm({
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/login/", {
+      const res = await fetch("https://flashcards-erbw.onrender.com/login/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ nome, password }),
       });
       const data = await res.json();
       if (res.ok) {
+        toast.success("Login realizado com sucesso! Redirecionando para a tela inicial...");
         router.push("/telaInicial");
       } else {
         setError(data.message || "Erro ao fazer login");
@@ -51,49 +54,60 @@ export function LoginForm({
           <form className="p-6 md:p-8" onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center text-center">
-                <h1 className="text-2xl font-bold">Welcome back</h1>
+                <h1 className="text-2xl font-bold">Bem-vindo!</h1>
                 <p className="text-muted-foreground text-balance">
-                  Login to your Acme Inc account
+                  Faça login na sua conta Flash Card
                 </p>
               </div>
               {error && (
                 <div className="text-red-500 text-sm text-center">{error}</div>
               )}
               <div className="grid gap-3">
-                <Label htmlFor="username">Usuário</Label>
+                <Label htmlFor="nome">Usuário</Label>
                 <Input
-                  id="username"
+                  id="nome"
                   type="text"
                   placeholder="Seu usuário"
                   required
-                  value={username}
+                  value={nome}
                   onChange={e => setUsername(e.target.value)}
                 />
               </div>
               <div className="grid gap-3">
                 <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password">Senha</Label>
                   <a
                     href="#"
                     className="ml-auto text-sm underline-offset-2 hover:underline"
                   >
-                    Forgot your password?
+                    Esqueceu a senha?
                   </a>
                 </div>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground"
+                    tabIndex={-1}
+                    onClick={() => setShowPassword((v) => !v)}
+                    aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Entrando..." : "Login"}
+                {loading ? "Entrando..." : "Entrar"}
               </Button>
               <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                 <span className="bg-card text-muted-foreground relative z-10 px-2">
-                  Or continue with
+                  Ou continue com
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-4">
@@ -104,7 +118,7 @@ export function LoginForm({
                       fill="currentColor"
                     />
                   </svg>
-                  <span className="sr-only">Login with Apple</span>
+                  <span className="sr-only">Entrar com Apple</span>
                 </Button>
                 <Button variant="outline" type="button" className="w-full">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -113,7 +127,7 @@ export function LoginForm({
                       fill="currentColor"
                     />
                   </svg>
-                  <span className="sr-only">Login with Google</span>
+                  <span className="sr-only">Entrar com Google</span>
                 </Button>
                 <Button variant="outline" type="button" className="w-full">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -122,25 +136,24 @@ export function LoginForm({
                       fill="currentColor"
                     />
                   </svg>
-                  <span className="sr-only">Login with Meta</span>
+                  <span className="sr-only">Entrar com Meta</span>
                 </Button>
               </div>
               <div className="text-center text-sm">
-                Don&apos;t have an account?{" "}
+                Não tem uma conta?{" "}
                 <a href="#" className="underline underline-offset-4">
-                  Sign up
+                  Cadastre-se
                 </a>
               </div>
             </div>
           </form>
           <div className="bg-muted relative hidden md:block ">
-            <Image src={logo} alt="logo" />
+            <Image src={logo} alt="logo" className="h-full"/>
           </div>
         </CardContent>
       </Card>
       <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
+        Ao continuar, você concorda com nossos <a href="#">Termos de Serviço</a> e <a href="#">Política de Privacidade</a>.
       </div>
     </div>
   );

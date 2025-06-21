@@ -25,7 +25,9 @@ export default function Home() {
   useEffect(() => {
     async function carregarDecks() {
       try {
-        const resp = await axios.get<DeckAPI[]>("/api/todos_decks/");
+        const resp = await axios.get<DeckAPI[]>(
+          "https://flashcards-erbw.onrender.com/decks_usuario/1"
+        );
         setDecks(resp.data)
       } catch (err: any) {
         setError(err.message)
