@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import CreateCardForm from "@/components/Cards/create-card-form";
 import { Button } from "@/components/ui/button";
 
 interface CardDoDeck {
@@ -31,22 +32,25 @@ export default function DeckPage() {
   const [deckData, setDeckData] = useState<DeckData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showCreateCard, setShowCreateCard] = useState(false);
+
+  // Função para recarregar o baralho
+  const fetchDeck = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch(`https://flashcards-erbw.onrender.com/get_deck/${id}`);
+      if (!res.ok) throw new Error("Erro ao buscar baralho");
+      const data = await res.json();
+      setDeckData(data);
+    } catch (err) {
+      setError("Não foi possível carregar o baralho.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    async function fetchDeck() {
-      setLoading(true);
-      setError("");
-      try {
-        const res = await fetch(`https://flashcards-erbw.onrender.com/get_deck/${id}`);
-        if (!res.ok) throw new Error("Erro ao buscar baralho");
-        const data = await res.json();
-        setDeckData(data);
-      } catch (err) {
-        setError("Não foi possível carregar o baralho.");
-      } finally {
-        setLoading(false);
-      }
-    }
     if (id) fetchDeck();
   }, [id]);
 
@@ -68,6 +72,20 @@ export default function DeckPage() {
           <p><b>Criador:</b> {deck.criador}</p>
         </CardContent>
       </Card>
+      <div className="flex justify-end mb-4">
+        <Button
+          className="flex items-center w-full justify-center"
+          onClick={() => setShowCreateCard((v) => !v)}
+        >
+          + Adicionar mais Cartas
+        </Button>
+      </div>
+      {showCreateCard && (
+        <CreateCardForm deckId={deck.id} onCardCreated={() => {
+          setShowCreateCard(false);
+          fetchDeck();
+        }} />
+      )}
       <h2 className="text-xl font-semibold mb-4">Cards do Baralho</h2>
       <div className="flex flex-col gap-4">
         {cardsDoDeck.length === 0 && <div>Nenhum card neste baralho.</div>}

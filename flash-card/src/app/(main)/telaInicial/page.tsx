@@ -25,8 +25,10 @@ export default function Home() {
   useEffect(() => {
     async function carregarDecks() {
       try {
+        const id = typeof window !== "undefined" ? localStorage.getItem("userId") : null;
+        if (!id) throw new Error("Usuário não identificado");
         const resp = await axios.get<DeckAPI[]>(
-          "https://flashcards-erbw.onrender.com/decks_usuario/1"
+          `https://flashcards-erbw.onrender.com/decks_usuario/${id}`
         );
         setDecks(resp.data)
       } catch (err: any) {

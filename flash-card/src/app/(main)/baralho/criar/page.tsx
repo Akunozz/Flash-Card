@@ -2,7 +2,6 @@
 
 import React, { useState } from "react"
 import { useRouter } from "next/navigation"
-import axios from "axios"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -13,6 +12,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { CirclePlus } from "lucide-react"
 
 export default function CriarBaralho() {
   const [nome, setNome] = useState("")
@@ -30,18 +30,24 @@ export default function CriarBaralho() {
     setLoading(true)
 
     try {
-      // Ajuste o 'criador' conforme seu usuário logado
+      // Novo payload conforme solicitado
       const payload = {
         nome,
-        numero_de_cards: 0,
-        ordem_dos_cards: { ordem: [] as number[] },
-        criador: 2,
+        criadorId: typeof window !== "undefined" ? Number(localStorage.getItem("userId")) : undefined,
       }
 
-      // Faz o POST via proxy Next.js
-      await axios.post("/api/criar_deck/", payload)
+      const res = await fetch(
+        "https://flashcards-erbw.onrender.com/criar_deck/",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
 
-      router.push("/") // ou "/telaInicial", conforme sua rota
+      if (!res.ok) throw new Error("Erro ao criar o baralho");
+
+      router.push("/telaInicial")
     } catch (err) {
       console.error("Erro ao criar baralho:", err)
       alert("Erro ao criar o baralho. Tente novamente.")
@@ -58,7 +64,7 @@ export default function CriarBaralho() {
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
-            <div className="flex flex-col space-y-1.5">
+            <div className="flex flex-col space-y-2">
               <Label htmlFor="nome">Nome do Baralho</Label>
               <Input
                 id="nome"
@@ -69,7 +75,7 @@ export default function CriarBaralho() {
               />
             </div>
           </CardContent>
-          <CardFooter className="flex justify-between">
+          <CardFooter className="flex justify-between mt-4">
             <Button
               variant="outline"
               type="button"
@@ -79,6 +85,7 @@ export default function CriarBaralho() {
               Cancelar
             </Button>
             <Button type="submit" disabled={loading}>
+              <CirclePlus />
               {loading ? "Criando..." : "Criar Baralho"}
             </Button>
           </CardFooter>

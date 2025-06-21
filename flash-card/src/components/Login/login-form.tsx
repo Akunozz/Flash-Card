@@ -35,10 +35,16 @@ export function LoginForm({
       });
       const data = await res.json();
       if (res.ok) {
+        // Salva o id do usuário retornado na resposta
+        if (data && data.usuario && data.usuario.id) {
+          if (typeof window !== "undefined") {
+            localStorage.setItem("userId", String(data.usuario.id));
+          }
+        }
         toast.success("Login realizado com sucesso! Redirecionando para a tela inicial...");
         router.push("/telaInicial");
       } else {
-        setError(data.message || "Erro ao fazer login");
+        setError(data.message || data.messagem || "Erro ao fazer login");
       }
     } catch (err) {
       setError("Erro de conexão com o servidor");

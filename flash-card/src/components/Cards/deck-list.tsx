@@ -108,9 +108,6 @@ export default function DeckList({ data }: DeckListProps) {
               {deck.numero_de_cards} card
               {deck.numero_de_cards !== 1 ? "s" : ""}
             </p>
-            <p className="text-muted-foreground">
-              Criado por usuário: {deck.criador}
-            </p>
           </CardContent>
 
           <CardFooter className="flex justify-end">

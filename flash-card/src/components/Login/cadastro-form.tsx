@@ -51,8 +51,7 @@ export function CadastroForm({
       });
       const data = await res.json();
       if (res.ok) {
-        toast.success("Usuário cadastrado com sucesso! Redirecionando para a tela inicial...");
-        setTimeout(() => router.push("/telaInicial"), 2000);
+        toast.success("Usuário cadastrado com sucesso! Por favor faça o login");
       } else {
         setError(data.message || "Erro ao cadastrar usuário");
       }
