@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { CirclePlus } from "lucide-react"
+import { CirclePlus, CircleX, X } from "lucide-react"
+import { toast } from "sonner"
 
 export default function CriarBaralho() {
   const [nome, setNome] = useState("")
@@ -23,14 +24,13 @@ export default function CriarBaralho() {
     e.preventDefault()
 
     if (!nome.trim()) {
-      alert("O nome do baralho não pode estar vazio.")
+      toast.error("O nome do baralho não pode estar vazio.")
       return
     }
 
     setLoading(true)
 
     try {
-      // Novo payload conforme solicitado
       const payload = {
         nome,
         criadorId: typeof window !== "undefined" ? Number(localStorage.getItem("userId")) : undefined,
@@ -49,8 +49,8 @@ export default function CriarBaralho() {
 
       router.push("/telaInicial")
     } catch (err) {
-      console.error("Erro ao criar baralho:", err)
-      alert("Erro ao criar o baralho. Tente novamente.")
+      toast.error(`Erro ao criar baralho: ${err instanceof Error ? err.message : String(err)}`)
+      toast.error("Erro ao criar o baralho. Tente novamente.")
     } finally {
       setLoading(false)
     }
@@ -81,10 +81,12 @@ export default function CriarBaralho() {
               type="button"
               onClick={() => router.back()}
               disabled={loading}
+              className="text-red-500 hover:bg-red-50 hover:text-red-600"
             >
+              <CircleX />
               Cancelar
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading} className="bg-green-500 text-white hover:bg-green-600 dark:text-black">
               <CirclePlus />
               {loading ? "Criando..." : "Criar Baralho"}
             </Button>

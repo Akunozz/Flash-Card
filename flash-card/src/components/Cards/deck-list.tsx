@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { deleteBaralho } from "@/services/reqBaralho"
 import {
   Card,
   CardContent,
@@ -10,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Trash2 } from "lucide-react"
+import { Eye, Trash2 } from "lucide-react"
 import Link from "next/link"
 import {
   AlertDialog,
@@ -23,6 +22,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { toast } from "sonner"
 
 // Tipo de acordo com o JSON de /todos_decks
 export interface DeckAPI {
@@ -44,11 +44,17 @@ export default function DeckList({ data }: DeckListProps) {
   const handleDelete = async (id: number) => {
     setDeletingId(id)
     try {
-      await deleteBaralho(id.toString())
+      const res = await fetch(
+        `https://flashcards-erbw.onrender.com/deletar_deck/${id}`,
+        {
+          method: "DELETE",
+        }
+      )
+      if (!res.ok) throw new Error("Erro ao deletar baralho")
       setDecks((prev) => prev.filter((d) => d.id !== id))
     } catch (err) {
       console.error("Erro ao deletar baralho:", err)
-      alert("Não foi possível deletar o baralho. Tente novamente.")
+      toast.error("Não foi possível deletar o baralho. Tente novamente.")
     } finally {
       setDeletingId(null)
     }
@@ -61,9 +67,6 @@ export default function DeckList({ data }: DeckListProps) {
         <p className="text-muted-foreground mb-6">
           Crie seu primeiro baralho para começar a estudar
         </p>
-        <Link href="/baralho/criar">
-          <Button>Criar Baralho</Button>
-        </Link>
       </div>
     )
   }
@@ -94,8 +97,8 @@ export default function DeckList({ data }: DeckListProps) {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => handleDelete(deck.id)}>
-                      Excluir
+                    <AlertDialogAction onClick={() => handleDelete(deck.id)} className="bg-red-500 hover:bg-red-600 text-white dark:text-black">
+                      {deletingId === deck.id ? "Excluindo..." : "Excluir"}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -104,7 +107,7 @@ export default function DeckList({ data }: DeckListProps) {
           </CardHeader>
 
           <CardContent>
-            <p >
+            <p>
               {deck.numero_de_cards} card
               {deck.numero_de_cards !== 1 ? "s" : ""}
             </p>
@@ -113,7 +116,8 @@ export default function DeckList({ data }: DeckListProps) {
           <CardFooter className="flex justify-end">
             <Link href={`/baralho/${deck.id}`}>
               <Button variant="outline" size="sm">
-                Ver Baralho
+                <Eye className="h-4 w-4 mr-2"/>
+                Visualizar Baralho
               </Button>
             </Link>
           </CardFooter>

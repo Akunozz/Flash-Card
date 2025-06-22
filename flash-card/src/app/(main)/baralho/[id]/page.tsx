@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import CreateCardForm from "@/components/Cards/create-card-form";
+import CriarCard from "@/components/Cards/criar-card";
 import { Button } from "@/components/ui/button";
+import { BookCopy, CirclePlus } from "lucide-react";
 
 interface CardDoDeck {
   id: number;
@@ -61,44 +62,56 @@ export default function DeckPage() {
   const { deck, cardsDoDeck } = deckData;
 
   return (
-    <div className="max-w-2xl mx-auto py-8">
+    <div className="py-8">
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>{deck.nome}</CardTitle>
+          <CardTitle className="flex text-2xl font-bold gap-2 items-center"><BookCopy /> {deck.nome}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p><b>ID:</b> {deck.id}</p>
-          <p><b>Número de cards:</b> {deck.numero_de_cards}</p>
-          <p><b>Criador:</b> {deck.criador}</p>
+          <p>
+            <b>Número de cards:</b> {deck.numero_de_cards}
+          </p>
         </CardContent>
       </Card>
       <div className="flex justify-end mb-4">
         <Button
-          className="flex items-center w-full justify-center"
+          className="flex items-center w-full justify-center bg-green-500 hover:bg-green-600 text-white dark:text-black"
           onClick={() => setShowCreateCard((v) => !v)}
         >
-          + Adicionar mais Cartas
+          <CirclePlus className="mr-2 h-4 w-4" />
+          Adicionar mais Cartas
         </Button>
       </div>
       {showCreateCard && (
-        <CreateCardForm deckId={deck.id} onCardCreated={() => {
-          setShowCreateCard(false);
-          fetchDeck();
-        }} />
+        <CriarCard
+          deckId={deck.id}
+          onCardCreated={() => {
+            setShowCreateCard(false);
+            fetchDeck();
+          }}
+        />
       )}
       <h2 className="text-xl font-semibold mb-4">Cards do Baralho</h2>
       <div className="flex flex-col gap-4">
         {cardsDoDeck.length === 0 && <div>Nenhum card neste baralho.</div>}
-        {cardsDoDeck.map(card => (
+        {cardsDoDeck.map((card) => (
           <Card key={card.id}>
             <CardHeader>
               <CardTitle>Card #{card.id}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="mb-2"><b>Pergunta:</b> {card.frente}</div>
-              <div className="mb-2"><b>Resposta:</b> {card.tras}</div>
+              <div className="mb-2">
+                <b>Pergunta:</b> {card.frente}
+              </div>
+              <div className="mb-2">
+                <b>Resposta:</b> {card.tras}
+              </div>
               {card.imagem && (
-                <img src={card.imagem} alt="Imagem do card" className="max-w-xs rounded" />
+                <img
+                  src={card.imagem}
+                  alt="Imagem do card"
+                  className="max-w-xs rounded"
+                />
               )}
             </CardContent>
           </Card>
