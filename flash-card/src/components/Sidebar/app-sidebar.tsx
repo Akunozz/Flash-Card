@@ -52,26 +52,6 @@ const data = {
       ],
     },
     {
-      title: "Cards",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "Criar card",
-          url: "/cartas/criar",
-        },
-        {
-          title: "Visualizar cards",
-          url: "/cartas",
-        },
-        {
-          title: "Fazer prova",
-          url: "#",
-        },
-      ],
-    },
-    {
       title: "Configurações",
       url: "#",
       icon: Settings2,

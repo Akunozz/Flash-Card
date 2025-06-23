@@ -23,6 +23,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
+import { BookOpen } from "lucide-react"
 
 // Tipo de acordo com o JSON de /todos_decks
 export interface DeckAPI {
@@ -35,9 +36,10 @@ export interface DeckAPI {
 
 interface DeckListProps {
   data: DeckAPI[]
+  showStudyButton?: boolean
 }
 
-export default function DeckList({ data }: DeckListProps) {
+export default function DeckList({ data, showStudyButton }: DeckListProps) {
   const [decks, setDecks] = useState<DeckAPI[]>(data)
   const [deletingId, setDeletingId] = useState<number | null>(null)
 
@@ -113,13 +115,21 @@ export default function DeckList({ data }: DeckListProps) {
             </p>
           </CardContent>
 
-          <CardFooter className="flex justify-end">
+          <CardFooter className="flex gap-2 justify-between">
             <Link href={`/baralho/${deck.id}`}>
               <Button variant="outline" size="sm">
                 <Eye className="h-4 w-4 mr-2"/>
-                Visualizar Baralho
+                Visualizar
               </Button>
             </Link>
+            {showStudyButton && (
+              <Link href={`/estudar/${deck.id}`}>
+                <Button variant="default" size="sm" className="bg-blue-500 hover:bg-blue-600 text-white dark:text-black">
+                  <BookOpen className="h-4 w-4 mr-2" />
+                  Estudar
+                </Button>
+              </Link>
+            )}
           </CardFooter>
         </Card>
       ))}

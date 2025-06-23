@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
 import { Button } from "@/components/ui/button"
-import { PlusCircle } from "lucide-react"
+import { PlusCircle, BookOpen } from "lucide-react"
 import Link from "next/link"
 import DeckList from "@/components/Cards/deck-list"
 
@@ -60,7 +60,7 @@ export default function Home() {
       {loading && <p>Carregando baralhos...</p>}
       {error && <p className="text-red-600">{error}</p>}
       {!loading && !error && (
-        <DeckList data={decks} />
+        <DeckList data={decks} showStudyButton />
       )}
     </div>
   )

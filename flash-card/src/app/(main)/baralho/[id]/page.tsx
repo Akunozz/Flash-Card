@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import CriarCard from "@/components/Cards/criar-card";
 import { Button } from "@/components/ui/button";
-import { BookCopy, CirclePlus } from "lucide-react";
+import { ArrowLeft, BookCopy, CirclePlus, LoaderCircleIcon, Trash2 } from "lucide-react";
 
 interface CardDoDeck {
   id: number;
@@ -55,7 +55,26 @@ export default function DeckPage() {
     if (id) fetchDeck();
   }, [id]);
 
-  if (loading) return <div className="text-center py-10">Carregando...</div>;
+  const handleDeleteCard = async (cardId: number) => {
+    if (!window.confirm("Tem certeza que deseja deletar esta carta?")) return;
+    try {
+      const res = await fetch(`https://flashcards-erbw.onrender.com/deletar_card/${cardId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Erro ao deletar carta");
+      fetchDeck();
+    } catch (err) {
+      alert("Erro ao deletar carta. Tente novamente.");
+    }
+  };
+
+  if (loading)
+    return (
+      <div className="flex flex-col items-center justify-center py-10">
+        <LoaderCircleIcon className="animate-spin w-10 h-10 text-green-500 mb-2" />
+        <span className="text-lg font-medium mt-2">Carregando...</span>
+      </div>
+    );
   if (error) return <div className="text-center text-red-500 py-10">{error}</div>;
   if (!deckData) return null;
 
@@ -63,9 +82,12 @@ export default function DeckPage() {
 
   return (
     <div className="py-8">
+      <ArrowLeft className="cursor-pointer mb-4 bg-green-500 rounded-full" onClick={() => window.history.back()} />
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle className="flex text-2xl font-bold gap-2 items-center"><BookCopy /> {deck.nome}</CardTitle>
+          <CardTitle className="flex text-2xl font-bold gap-2 items-center">
+            <BookCopy /> {deck.nome}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <p>
@@ -96,15 +118,24 @@ export default function DeckPage() {
         {cardsDoDeck.length === 0 && <div>Nenhum card neste baralho.</div>}
         {cardsDoDeck.map((card) => (
           <Card key={card.id}>
-            <CardHeader>
-              <CardTitle>Card #{card.id}</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-2xl">{card.frente}</CardTitle>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-red-500 hover:bg-red-100 dark:hover:bg-red-900"
+                title="Deletar carta"
+                onClick={() => handleDeleteCard(card.id)}
+              >
+                <Trash2 />
+              </Button>
             </CardHeader>
             <CardContent>
               <div className="mb-2">
-                <b>Pergunta:</b> {card.frente}
+                <b>Resposta:</b> {card.tras}
               </div>
               <div className="mb-2">
-                <b>Resposta:</b> {card.tras}
+                <b>Tag:</b> {card.tag}
               </div>
               {card.imagem && (
                 <img
