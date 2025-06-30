@@ -35,6 +35,8 @@ export default function EstudarPage() {
   const [wrongAnswers, setWrongAnswers] = useState(0);
   const [canProceed, setCanProceed] = useState(false);
   const [gameFinished, setGameFinished] = useState(false);
+  const [wrongCardIds, setWrongCardIds] = useState<number[]>([]);
+  const [correctCardIds, setCorrectCardIds] = useState<number[]>([]);
 
   useEffect(() => {
     async function fetchCards() {
@@ -65,21 +67,47 @@ export default function EstudarPage() {
 
   const handleCorrect = () => {
     setCorrectAnswers((prev) => prev + 1);
+    setCorrectCardIds((prev) => [...prev, card.id]);
     setCanProceed(true);
   };
 
   const handleWrong = () => {
     setWrongAnswers((prev) => prev + 1);
+    setWrongCardIds((prev) => [...prev, card.id]);
     setCanProceed(true);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (current + 1 >= cards.length) {
+      // Finalizar estudo - enviar novaOrdem para API
+      await finishStudy();
       setGameFinished(true);
     } else {
       setCurrent((prev) => prev + 1);
       setShowBack(false);
       setCanProceed(false);
+    }
+  };
+
+  const finishStudy = async () => {
+    try {
+      // Cartas erradas primeiro, depois cartas corretas
+      const novaOrdem = [...wrongCardIds, ...correctCardIds];
+      
+      const res = await fetch("https://flashcards-erbw.onrender.com/terminar_estudo/", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          deckId: parseInt(id as string),
+          novaOrdem: novaOrdem,
+        }),
+      });
+      
+      if (!res.ok) {
+        console.error("Erro ao finalizar estudo");
+      }
+    } catch (error) {
+      console.error("Erro ao finalizar estudo:", error);
     }
   };
 
@@ -90,6 +118,8 @@ export default function EstudarPage() {
     setWrongAnswers(0);
     setCanProceed(false);
     setGameFinished(false);
+    setWrongCardIds([]);
+    setCorrectCardIds([]);
   };
 
   if (loading)
@@ -157,6 +187,13 @@ export default function EstudarPage() {
           <RotateCcw className="w-4 h-4 mr-2" />
           Jogar Novamente
         </Button>
+        <Button
+          onClick={() => window.history.back()}
+          variant="outline"
+          className="text-sm">
+          <ArrowRight className="w-4 h-4 mr-2" />
+          Voltar para a tela inicial
+          </Button>
       </div>
     );
   }

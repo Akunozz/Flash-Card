@@ -51,25 +51,6 @@ const data = {
         },
       ],
     },
-    {
-      title: "Configurações",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "Geral",
-          url: "#",
-        },
-        {
-          title: "Cards",
-          url: "#",
-        },
-        {
-          title: "Perfil",
-          url: "#",
-        },
-      ],
-    },
   ],
 }
 

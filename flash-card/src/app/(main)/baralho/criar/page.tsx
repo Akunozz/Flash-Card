@@ -57,7 +57,7 @@ export default function CriarBaralho() {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-md">
+    <div className="container mx-auto py-6 px-0 sm:px-4 max-w-lg">
       <Card>
         <CardHeader>
           <CardTitle>Criar Novo Baralho</CardTitle>

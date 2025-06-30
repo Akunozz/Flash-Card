@@ -41,14 +41,14 @@ export default function Home() {
   return (
     <div className="container mx-auto py-8 px-4">
       <header className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Aplicativo de Flash Cards</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">Flash Cards</h1>
+        <p className="text-xs sm:text-sm text-muted-foreground">
           Crie e estude seus flash cards para memorizar melhor
         </p>
       </header>
 
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-semibold">Seus Baralhos</h2>
+        <h2 className="text-lg sm:text-2xl font-semibold">Seus Baralhos</h2>
         <Link href="/baralho/criar">
           <Button className="bg-green-500 hover:bg-green-600 text-white dark:text-black">
             <PlusCircle className="mr-2 h-4 w-4" />

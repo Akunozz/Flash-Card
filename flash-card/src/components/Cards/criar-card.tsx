@@ -116,7 +116,7 @@ export default function CriarCard({ deckId, onCardCreated }: CriarCardProps) {
             <Button
               type="submit"
               disabled={loading}
-              className="w-1/2 bg-green-500 text-white hover:bg-green-600 dark:text-black"
+              className="w-1/2 bg-green-500 text-white hover:bg-green-600 dark:text-black p-1"
             >
               <CirclePlus />
               {loading ? "Adicionando..." : "Adicionar Carta"}
